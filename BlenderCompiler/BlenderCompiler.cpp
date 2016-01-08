@@ -279,7 +279,6 @@ int main(int argc, char* argv[])
     std::wstring programDir = sToW(getCurrentPath());
 
     command = L"\"\"" + blenderPath + L"\" -b \"" + blendFile + L"\" -P " + SCRIPT_FILE_NAME + L" -- \"" + programDir + SCRIPTS_DIRECTORY + L"\"";
-    //command = L"\"\"" + blenderPath + L"\" \"" + blendFile + L"\" -P " + SCRIPT_FILE_NAME + L" -- \"" + programDir + SCRIPTS_DIRECTORY + L"\"";
 
     _wsystem(command.c_str());
 
