@@ -12,12 +12,26 @@ const std::wstring DIRECTORY_FILE_NAME = L"blender_directory.txt";
 const std::wstring SCRIPT_FILE_NAME = L"blender_compile.py";
 const std::wstring SCRIPTS_DIRECTORY = L"utils\\blender_scripts\\";
 
+const std::wstring BLENDER_COMPILE_PY = L"import sys\n"
+                                        L"import bpy\n"
+                                        L"\n"
+                                        L"for i,v in enumerate(sys.argv):\n"
+                                        L"    if v == '--':\n"
+                                        L"        if len(sys.argv) <= i+1:\n"
+                                        L"            exit(1)\n"
+                                        L"        sys.path.insert(0, sys.argv[i+1])\n"
+                                        L"        break\n"
+                                        L"import export_spark_model\n"
+                                        L"export_spark_model.save()\n"
+                                        L"\n"
+                                        L"bpy.ops.wm.quit_blender()";
+
 enum fileType
 {
     ft_exe = 1
 };
 
-bool WriteToFile(std::wstring fileName, std::wstring& contents)
+bool WriteToFile(std::wstring fileName, const std::wstring& contents)
 {
     std::wofstream outfile(fileName);
     if (!outfile.is_open())
@@ -267,7 +281,13 @@ int main(int argc, char* argv[])
     // ensure pyton intermediate script exists.  Should be in same directory as this executable.
     if (!DoesFileExist(SCRIPT_FILE_NAME))
     {
-        std::cerr << "Missing python script 'blender_compile.py'.  Please re-install the application." << std::endl;
+        bool result = WriteToFile(SCRIPT_FILE_NAME, BLENDER_COMPILE_PY);
+
+        if ((!result) || (!DoesFileExist(SCRIPT_FILE_NAME)))
+        {
+            std::cerr << "Missing python script 'blender_compile.py'.  Attempt to automatically install failed." << std::endl;
+        }
+        
         return 1;
     }
 
