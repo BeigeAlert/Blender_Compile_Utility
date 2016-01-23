@@ -7,29 +7,71 @@
 #include <fstream>
 #include <iostream>
 #include <direct.h>
+#include <vector>
+#include <ctime>
+
+// auto-generated header with the up-to-date python files literally embedded.
+// run python_to_header.py to generate this file from the python scripts in the git directory
+#include "generated_python_literals.h"
+
+const std::wstring SCRIPT_FILE_NAME = L"blender_compile.py";
 
 const std::wstring DIRECTORY_FILE_NAME = L"blender_directory.txt";
-const std::wstring SCRIPT_FILE_NAME = L"blender_compile.py";
 const std::wstring SCRIPTS_DIRECTORY = L"utils\\blender_scripts\\";
-
-const std::wstring BLENDER_COMPILE_PY = L"import sys\n"
-                                        L"import bpy\n"
-                                        L"\n"
-                                        L"for i,v in enumerate(sys.argv):\n"
-                                        L"    if v == '--':\n"
-                                        L"        if len(sys.argv) <= i+1:\n"
-                                        L"            exit(1)\n"
-                                        L"        sys.path.insert(0, sys.argv[i+1])\n"
-                                        L"        break\n"
-                                        L"import export_spark_model\n"
-                                        L"export_spark_model.save()\n"
-                                        L"\n"
-                                        L"bpy.ops.wm.quit_blender()";
 
 enum fileType
 {
     ft_exe = 1
 };
+
+std::wstring sToW(const std::string& s)
+{
+    std::wstring w;
+    w.assign(s.begin(), s.end());
+    return w;
+}
+
+std::string wToS(const std::wstring& w)
+{
+    std::string s;
+    s.assign(w.begin(), w.end());
+    return s;
+}
+
+bool VerifyScriptsDirectory()
+{
+    int result = _wmkdir(SCRIPTS_DIRECTORY.c_str());
+    if (result != 0)
+    {
+        if (errno == EEXIST)
+        {
+            return true; //directory already existed
+        }
+        else if (errno == ENOENT)
+        {
+            return false; //directory could not be found
+        }
+    }
+    return true; //directory didn't exist, and was created
+}
+
+bool WriteLinesToFile(std::wstring fileName, const std::vector<const std::wstring>& contents)
+{
+    if (!VerifyScriptsDirectory())
+        return false;
+
+    std::wofstream outfile(fileName);
+    if (!outfile.is_open())
+    {
+        return false;
+    }
+    for (unsigned int i = 0; i < contents.size(); ++i)
+    {
+        outfile << contents[i].c_str();
+    }
+    outfile.close();
+    return true;
+}
 
 bool WriteToFile(std::wstring fileName, const std::wstring& contents)
 {
@@ -60,8 +102,10 @@ bool DoesFileExist(std::wstring fileName)
     std::ifstream infile(fileName);
     if (infile.good())
     {
+        infile.close();
         return true;
     }
+    infile.close();
     return false;
 }
 
@@ -176,7 +220,14 @@ bool EnsureValidBlenderDirectory(std::wstring& blenderPath)
         int result = MessageBox(NULL, L"Please locate your blender installation.", L"First time setup", MB_OKCANCEL | MB_ICONINFORMATION);
         if (result != IDOK)
         {
-            return false;
+            if (!DoesFileExist(DIRECTORY_FILE_NAME))
+            {
+                return false;
+            }
+            else
+            {
+                return ReadFromFile(DIRECTORY_FILE_NAME, blenderPath);
+            }
         }
         return PromptForBlender(blenderPath);
     }
@@ -199,12 +250,6 @@ bool EnsureValidBlenderDirectory(std::wstring& blenderPath)
     }
 }
 
-std::wstring sToW(const std::string& s)
-{
-    std::wstring w;
-    w.assign(s.begin(), s.end());
-    return w;
-}
 
 std::string getCurrentPath()
 {
@@ -222,6 +267,64 @@ std::string getCurrentPath()
     }
 
     return path;
+}
+
+unsigned long long GetLastUpdatedValue(int i)
+{
+    std::wstring contents;
+    if (!ReadFromFile(SCRIPTS_DIRECTORY + PYTHON_FILE_NAMES[i], contents)) // gets us just the first line.
+        return 0;
+
+    unsigned long long value;
+    try {
+        value = std::stoll(contents.substr(2, std::string::npos));
+    }
+    catch (const std::invalid_argument& ia)
+    {
+        return 0;
+    }
+    return value;
+}
+
+bool ReAquireScript(int i)
+{
+    return WriteLinesToFile(SCRIPTS_DIRECTORY + PYTHON_FILE_NAMES[i], PYTHON_FILE_DATAS[i]);
+}
+
+bool VerifyScript(int i)
+{
+    std::wstring file_name = SCRIPTS_DIRECTORY + PYTHON_FILE_NAMES[i];
+    if (!DoesFileExist(file_name))
+    {
+        // file doesn't exist, copy the file over
+        return ReAquireScript(i);
+    }
+    else
+    {
+        unsigned long long verify_last = GetLastUpdatedValue(i);
+        if (verify_last == 0)
+            return false;
+
+        if (LAST_UPDATED != verify_last)
+        {
+            std::cerr << "Reaquiring script " << wToS(PYTHON_FILE_NAMES[i]) << std::endl;
+            // file exists, but is out of date.  Overwrite it.
+            return ReAquireScript(i);
+        }
+        return true;
+    }
+}
+
+bool VerifyScripts()
+{
+    for (unsigned int i = 0; i < PYTHON_FILE_NAMES.size(); ++i)
+    {
+        if (!VerifyScript(i))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 int main(int argc, char* argv[])
@@ -278,16 +381,9 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // ensure pyton intermediate script exists.  Should be in same directory as this executable.
-    if (!DoesFileExist(SCRIPT_FILE_NAME))
+    if (!VerifyScripts())
     {
-        bool result = WriteToFile(SCRIPT_FILE_NAME, BLENDER_COMPILE_PY);
-
-        if ((!result) || (!DoesFileExist(SCRIPT_FILE_NAME)))
-        {
-            std::cerr << "Missing python script 'blender_compile.py'.  Attempt to automatically install failed." << std::endl;
-        }
-        
+        std::cerr << "One or more scripts are missing and replacing them failed." << std::endl;
         return 1;
     }
 
@@ -298,7 +394,7 @@ int main(int argc, char* argv[])
     std::wstring command;
     std::wstring programDir = sToW(getCurrentPath());
 
-    command = L"\"\"" + blenderPath + L"\" -b \"" + blendFile + L"\" -P " + SCRIPT_FILE_NAME + L" -- \"" + programDir + SCRIPTS_DIRECTORY + L"\"";
+    command = L"\"\"" + blenderPath + L"\" -b \"" + blendFile + L"\" -P " + SCRIPTS_DIRECTORY + SCRIPT_FILE_NAME + L" -- \"" + programDir + SCRIPTS_DIRECTORY + L"\"";
 
     _wsystem(command.c_str());
 
