@@ -488,6 +488,11 @@ int main(int argc, char* argv[])
                 L"entries to make Builder work with this utility.";
             MessageBox(NULL, message.c_str(), L"Error", MB_OK | MB_ICONERROR);
         }
+
+        if (!VerifyScripts())
+        {
+            MessageBox(NULL, L"One or more scripts are missing and replacing them failed.", L"Error", MB_OK | MB_ICONERROR);
+        }
         return 0;
     }
     
