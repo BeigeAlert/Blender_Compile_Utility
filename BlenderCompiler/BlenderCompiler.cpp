@@ -9,6 +9,7 @@
 #include <direct.h>
 #include <vector>
 #include <ctime>
+#include "BuilderXmlEntries.h"
 
 // auto-generated header with the up-to-date python files literally embedded.
 // run python_to_header.py to generate this file from the python scripts in the git directory
@@ -53,6 +54,24 @@ bool VerifyScriptsDirectory()
         }
     }
     return true; //directory didn't exist, and was created
+}
+
+bool WriteLinesToFile(std::wstring fileName, std::vector<std::wstring>& contents)
+{
+    if (!VerifyScriptsDirectory())
+        return false;
+
+    std::wofstream outfile(fileName);
+    if (!outfile.is_open())
+    {
+        return false;
+    }
+    for (unsigned int i = 0; i < contents.size(); ++i)
+    {
+        outfile << contents[i].c_str();
+    }
+    outfile.close();
+    return true;
 }
 
 bool WriteLinesToFile(std::wstring fileName, const std::vector<const std::wstring>& contents)
@@ -239,7 +258,7 @@ bool EnsureValidBlenderDirectory(std::wstring& blenderPath)
         if (!DoesFileExist(blenderPath))
         {
             // ...but doesn't point to valid blender executable...
-            int result = MessageBox(NULL, L"Unable to locate blender.exe in the provided location.", L"Error", MB_OKCANCEL | MB_ICONERROR);
+            int result = MessageBox(NULL, L"Unable to locate blender.exe in the provided location.", L"Error", MB_OK | MB_ICONERROR);
             if (result != IDOK)
             {
                 return false;
@@ -279,7 +298,7 @@ unsigned long long GetLastUpdatedValue(int i)
     try {
         value = std::stoll(contents.substr(2, std::string::npos));
     }
-    catch (const std::invalid_argument& ia)
+    catch (const std::invalid_argument&)
     {
         return 0;
     }
@@ -327,6 +346,102 @@ bool VerifyScripts()
     return true;
 }
 
+bool ReadXmlFile(const std::wstring& XmlFilename, std::vector<std::wstring>& output)
+{
+    std::wifstream file(XmlFilename);
+    std::wstring str;
+    while (std::getline(file, str))
+    {
+        output.push_back(str + L"\n");
+    }
+    return true;
+}
+
+bool FindXmlMatch(const std::vector<std::wstring>& xmlFile, const std::wstring& source, int& lineNumber)
+{
+    // find the first line of the bundled xml entries in the xml file.
+    for (unsigned int i = 0; i < xmlFile.size(); ++i)
+    {
+        const std::wstring& currentLine = xmlFile[i];
+        size_t result = currentLine.find(source);
+        if (result == std::wstring::npos) //not found
+        {
+            continue;
+        }
+        else
+        {
+            lineNumber = i;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool InsertXmlEntries(std::vector<std::wstring>& XmlContents)
+{
+    int lineNumber;
+    std::wstring source = L"<rules>";
+    if (!FindXmlMatch(XmlContents, source, lineNumber))
+    {
+        return false;
+    }
+
+    // figure out how much to indent.  Luckily, it's all tabs, so we can just count the characters.
+    int numTabs = 0;
+    size_t result = XmlContents[lineNumber].find(source);
+    if (result != std::wstring::npos && result > 0)
+    {
+        numTabs = result + 1;
+    }
+    std::wstring tabs = L"";
+    tabs.resize(numTabs, L'\t');
+
+    ++lineNumber; //insert AFTER <rules>
+
+    XmlContents.insert(XmlContents.begin() + lineNumber, tabs + L"\n");
+    ++lineNumber;
+
+    for (unsigned int i = 0; i < XmlEntries.size(); ++i)
+    {
+        XmlContents.insert(XmlContents.begin() + lineNumber, tabs + XmlEntries[i]);
+        ++lineNumber;
+    }
+
+    return true;
+}
+
+bool VerifyXmlEntries()
+{
+    if (!DoesFileExist(XmlFileName))
+    {
+        return false;
+    }
+
+    std::vector<std::wstring> XmlContents;
+    ReadXmlFile(XmlFileName, XmlContents);
+
+    int lineNumber;
+    if (!FindXmlMatch(XmlContents, XmlEntries[0], lineNumber))
+    {
+        // Couldn't find the first line of the xml entries in the xml file, so we need to add them.
+        if (!InsertXmlEntries(XmlContents))
+        {
+            return false;
+        }
+        else
+        {
+            return WriteLinesToFile(XmlFileName, XmlContents);
+        }
+    }
+    else
+    {
+        // we found the first line, good enough.  Don't want to FORCE people to
+        // setup this file exactly like me, but just want to add the entries if
+        // they haven't got them already.
+        return true;
+    }
+}
+
 int main(int argc, char* argv[])
 {
     std::wstring blenderPath;
@@ -365,6 +480,13 @@ int main(int argc, char* argv[])
         if (result == IDYES)
         {
             PromptForBlender(blenderPath);
+        }
+        
+        if (!VerifyXmlEntries())
+        {
+            std::wstring message = L"There was a problem verifying that " + XmlFileName + L" contains the correct "
+                L"entries to make Builder work with this utility.";
+            MessageBox(NULL, message.c_str(), L"Error", MB_OK | MB_ICONERROR);
         }
         return 0;
     }
