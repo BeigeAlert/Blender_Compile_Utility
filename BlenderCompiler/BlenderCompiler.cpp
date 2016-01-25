@@ -9,6 +9,7 @@
 #include <direct.h>
 #include <vector>
 #include <ctime>
+#include <algorithm>
 #include "BuilderXmlEntries.h"
 
 // auto-generated header with the up-to-date python files literally embedded.
@@ -19,6 +20,11 @@ const std::wstring SCRIPT_FILE_NAME = L"blender_compile.py";
 
 const std::wstring DIRECTORY_FILE_NAME = L"blender_directory.txt";
 const std::wstring SCRIPTS_DIRECTORY = L"utils\\blender_scripts\\";
+
+void DebugPopup(std::wstring message)
+{
+    MessageBox(NULL, message.c_str(), L"Debug", MB_OK | MB_ICONHAND);
+}
 
 enum fileType
 {
@@ -357,7 +363,7 @@ bool ReadXmlFile(const std::wstring& XmlFilename, std::vector<std::wstring>& out
     return true;
 }
 
-bool FindXmlMatch(const std::vector<std::wstring>& xmlFile, const std::wstring& source, int& lineNumber)
+bool FindXmlFirstLine(const std::vector<std::wstring>& xmlFile, const std::wstring& source, int& lineNumber)
 {
     // find the first line of the bundled xml entries in the xml file.
     for (unsigned int i = 0; i < xmlFile.size(); ++i)
@@ -377,11 +383,33 @@ bool FindXmlMatch(const std::vector<std::wstring>& xmlFile, const std::wstring& 
     return false;
 }
 
+bool CheckXmlMatch(const std::vector<std::wstring>& xmlFile)
+{
+    int lineNumber;
+    FindXmlFirstLine(xmlFile, XmlEntries[0], lineNumber);
+
+    if (XmlEntries.size() == 1)
+    {
+        return true;
+    }
+
+    for (unsigned int i = 1; i < XmlEntries.size(); ++i)
+    {
+        size_t result = xmlFile[lineNumber+i].find(XmlEntries[i]);
+        if (result == std::wstring::npos)
+        {
+            return false;
+        }
+    }
+
+    return true;  //made it this far, everything appears to be in order.
+}
+
 bool InsertXmlEntries(std::vector<std::wstring>& XmlContents)
 {
     int lineNumber;
     std::wstring source = L"<rules>";
-    if (!FindXmlMatch(XmlContents, source, lineNumber))
+    if (!FindXmlFirstLine(XmlContents, source, lineNumber))
     {
         return false;
     }
@@ -410,6 +438,40 @@ bool InsertXmlEntries(std::vector<std::wstring>& XmlContents)
     return true;
 }
 
+bool RepairXmlFile(std::vector<std::wstring>& XmlContents)
+{
+    // Really, the only way we can repair the file is if the starting end ending comments are left intact,
+    // so we'll start by trying to locate them.
+    int firstLineNumber;
+    if (!FindXmlFirstLine(XmlContents, XmlEntries.front(), firstLineNumber))
+    {
+        return false;
+    }
+
+    int lastLineNumber;
+    if (!FindXmlFirstLine(XmlContents, XmlEntries.back(), lastLineNumber))
+    {
+        return false;
+    }
+
+    // Verify line numbers are okay, and remove.
+    if (firstLineNumber >= lastLineNumber)
+    {
+        return false;
+    }
+    XmlContents.erase(XmlContents.begin() + firstLineNumber, XmlContents.begin() + lastLineNumber + 1);
+
+    // Add lines back in.
+    if (!InsertXmlEntries(XmlContents))
+    {
+        return false;
+    }
+    else
+    {
+        return WriteLinesToFile(XmlFileName, XmlContents);
+    }
+}
+
 bool VerifyXmlEntries()
 {
     if (!DoesFileExist(XmlFileName))
@@ -421,7 +483,7 @@ bool VerifyXmlEntries()
     ReadXmlFile(XmlFileName, XmlContents);
 
     int lineNumber;
-    if (!FindXmlMatch(XmlContents, XmlEntries[0], lineNumber))
+    if (!FindXmlFirstLine(XmlContents, XmlEntries[0], lineNumber))
     {
         // Couldn't find the first line of the xml entries in the xml file, so we need to add them.
         if (!InsertXmlEntries(XmlContents))
@@ -438,7 +500,34 @@ bool VerifyXmlEntries()
         // we found the first line, good enough.  Don't want to FORCE people to
         // setup this file exactly like me, but just want to add the entries if
         // they haven't got them already.
-        return true;
+        
+        // we'll check and see if what's there matches the internals of what we
+        // have here.  If they match, we'll exit normally, otherwise we'll prompt
+        // the user, asking them if they want us to repair the builder_setup.xml.
+
+        if (CheckXmlMatch(XmlContents))
+        {
+            return true;  //matches, nothing to do here.
+        }
+        else
+        {
+            std::wstring message = L"It appears that the portion of builder_setup.xml that deals with "
+                                   L"blender files is out of date, or has been altered.  Would you like "
+                                   L"to repair this now?";
+            int result = MessageBox(NULL, message.c_str(), L"Repair builder_setup.xml?", MB_YESNO | MB_ICONEXCLAMATION);
+            if (result != IDYES)
+            {
+                return true;  // we tried, but they don't want it.
+            }
+
+            // attempt to repair XML file.
+            if (!RepairXmlFile(XmlContents))
+            {
+                std::wstring message = L"Unable to repair xml file.  Delete builder_setup.xml, and run verify files through steam to replace it.  Then run this utility again.";
+                MessageBox(NULL, message.c_str(), L"Error", MB_OK | MB_ICONERROR);
+            }
+            return true;
+        }
     }
 }
 
