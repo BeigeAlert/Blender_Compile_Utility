@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-const unsigned long long LAST_UPDATED = 1453607270;
+const unsigned long long LAST_UPDATED = 1453703568;
 
 typedef const std::wstring p_line;
 
@@ -21,7 +21,7 @@ const std::vector<const std::wstring> PYTHON_FILE_NAMES = { L"export_spark_model
 const std::vector<p_file> PYTHON_FILE_DATAS = { 
                                                 // export_spark_model.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -904,7 +904,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        model_name_split = model_name.split('.')\n",
                                                 L"        if model_name_split[-1].lower() != 'model':\n",
                                                 L"            model_name_split.append('model')\n",
-                                                L"        model_name = '.'.join(model_name_split).lower()\n",
+                                                L"        model_name = '.'.join(model_name_split)\n",
                                                 L"        if model_name in model_name_list:\n",
                                                 L"            raise SparkException(\"Duplicate model name provided in model_compile_list block.  Aborting.\" +\n",
                                                 L"                                 \"(Error at line \" + str(reader.get_line()) + \")\")\n",
@@ -1743,14 +1743,6 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        writer.begin_chunk(\"Chunk_AnimationModel\")\n",
                                                 L"        writer.write_string(d.animation_model)\n",
                                                 L"        writer.end_chunk()\n",
-                                                L"\n",
-                                                L"    #base_path_folders = base_dir.replace('\\\\','/')\n",
-                                                L"    #base_path_folders = base_path_folders.split('/')\n",
-                                                L"\n",
-                                                L"    #model_name_path = model_name.split('/')\n",
-                                                L"    #final_path = base_path_folders[:]\n",
-                                                L"    #final_path.extend(model_name_path)\n",
-                                                L"    #out_file = '/'.join(final_path)\n",
                                                 L"    \n",
                                                 L"    thisDir = bpy.data.filepath.replace('\\\\','/').split('/')\n",
                                                 L"    thisDir.pop() # discard filename\n",
@@ -1867,7 +1859,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // model_compile_parser.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"# Helps tokenize the model_compile text block\n",
                                                 L"# Written by Trevor \"BeigeAlert\" Harris\n",
                                                 L"\n",
@@ -1976,7 +1968,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_animation.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -2971,7 +2963,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_common.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -3877,7 +3869,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_model.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4091,7 +4083,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_physics.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4734,7 +4726,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_writer.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4848,7 +4840,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // blender_compile.py
                                                 {
-                                                L"# 1453607270\n",
+                                                L"# 1453703568\n",
                                                 L"import sys\n",
                                                 L"import bpy\n",
                                                 L"\n",
