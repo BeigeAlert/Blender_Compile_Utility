@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-const unsigned long long LAST_UPDATED = 1453703568;
+const unsigned long long LAST_UPDATED = 1455664595;
 
 typedef const std::wstring p_line;
 
@@ -21,7 +21,7 @@ const std::vector<const std::wstring> PYTHON_FILE_NAMES = { L"export_spark_model
 const std::vector<p_file> PYTHON_FILE_DATAS = { 
                                                 // export_spark_model.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -1822,7 +1822,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        except Exception as e2:\n",
                                                 L"            success_list[i] = False\n",
                                                 L"            print(blend_name, \": Exception raised!  \", e2.__class__.__name__, \": \", e2.args[0], sep='', file=sys.stderr)\n",
-                                                L"            \n",
+                                                L"           \n",
                                                 L"    succeeded_count = 0\n",
                                                 L"    failed_count = 0\n",
                                                 L"    for i in range(len(model_name_list)):\n",
@@ -1855,11 +1855,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"    \n",
                                                 L"    \n",
                                                 L"    \n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // model_compile_parser.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"# Helps tokenize the model_compile text block\n",
                                                 L"# Written by Trevor \"BeigeAlert\" Harris\n",
                                                 L"\n",
@@ -1964,11 +1965,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"    \n",
                                                 L"    def get_line(self):\n",
                                                 L"        return self.lines[self.line].line_number + 1\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_animation.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -2959,11 +2961,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        seq = d.sequences[i]\n",
                                                 L"        anim_node = d.animation_nodes[seq.animation_node]\n",
                                                 L"        seq.length = anim_node.get_length(d)\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_common.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -3545,6 +3548,13 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"                \n",
                                                 L"        if axis_fix:\n",
                                                 L"            self.fix_axes(reverse=reverse)\n",
+                                                L"    \n",
+                                                L"    def to_blender(self):\n",
+                                                L"        mat = mathutils.Matrix()\n",
+                                                L"        for r in range(4):\n",
+                                                L"            for c in range(4):\n",
+                                                L"                mat[r][c] = self.data[r][c]\n",
+                                                L"        return mat\n",
                                                 L"\n",
                                                 L"    def from_coords(self, coords):\n",
                                                 L"        \"\"\"\n",
@@ -3865,11 +3875,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        dz = self.z - sign * other.z\n",
                                                 L"        dw = self.w - sign * other.w\n",
                                                 L"        return dx * dx + dy * dy + dz * dz + dw * dw\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_model.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4079,11 +4090,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"            if self.materials[i].spark_material == s_mat:\n",
                                                 L"                return i\n",
                                                 L"        return -1\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_physics.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4304,6 +4316,8 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"                # transform to alternate origin, if applicable\n",
                                                 L"                if d.alternate_origin_object:\n",
                                                 L"                    transform = Mat4(d.alternate_origin_object.matrix_world.inverted()) * transform\n",
+                                                L"            else:\n",
+                                                L"                transform = Mat4(obj.matrix_world)\n",
                                                 L"\n",
                                                 L"        else:  # Parented to bone\n",
                                                 L"            if d.alternate_origin_object:\n",
@@ -4327,7 +4341,10 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        transform_mat = transform\n",
                                                 L"    else:\n",
                                                 L"        transform_mat = transform\n",
-                                                L"        transform_mat.fix_axes(reverse=True)\n",
+                                                L"        transform_mat_b = Mat4(transform_mat)\n",
+                                                L"        transform_mat_b.fix_axes(reverse=True)\n",
+                                                L"        blen_trans = transform_mat_b.to_blender()\n",
+                                                L"        temp_mesh.transform(blen_trans)\n",
                                                 L"    new_solid.object_to_bone_coords = Coords(transform_mat)\n",
                                                 L"    new_solid.object_to_bone_coords.origin *= d.scale_value\n",
                                                 L"\n",
@@ -4722,11 +4739,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        new_rep = CollisionRep()\n",
                                                 L"        reps.append(new_rep)\n",
                                                 L"        read_physics_group(d, new_rep, d.physics_groups[i])\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_writer.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4836,11 +4854,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"\n",
                                                 L"    def close_and_return(self):\n",
                                                 L"        return self.data[0:self.pos]\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // blender_compile.py
                                                 {
-                                                L"# 1453703568\n",
+                                                L"# 1455664595\n",
                                                 L"import sys\n",
                                                 L"import bpy\n",
                                                 L"\n",
@@ -4853,4 +4872,5 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"import export_spark_model\n",
                                                 L"export_spark_model.save()\n",
                                                 L"\n",
-                                                L"bpy.ops.wm.quit_blender()\n"}};
+                                                L"bpy.ops.wm.quit_blender()\n",
+                                                L"\n"}};

@@ -48,6 +48,18 @@ for i in range(len(PYTHON_FILES)):
     
     python_file_contents = python_file_contents.split('\n')
     
+    # remove previous timestamp if it exists
+    first_line = python_file_contents[0].strip().split(' ')
+    first_line = [x for x in first_line if x] # remove blanks caused by consecutive spaces
+    
+    if len(first_line) >= 2:
+        if first_line[0] == '#':
+            try:
+                int(first_line[1])
+                python_file_contents.pop(0)
+            except ValueError:
+                pass
+    
     python_file_contents.insert(0, '# ' + str(int(time.time())))
     
     file_name = PYTHON_FILES[i].replace('\\','/').split('/')[-1]
