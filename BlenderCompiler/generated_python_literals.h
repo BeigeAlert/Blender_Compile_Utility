@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-const unsigned long long LAST_UPDATED = 1455664595;
+const unsigned long long LAST_UPDATED = 1455920892;
 
 typedef const std::wstring p_line;
 
@@ -21,7 +21,7 @@ const std::vector<const std::wstring> PYTHON_FILE_NAMES = { L"export_spark_model
 const std::vector<p_file> PYTHON_FILE_DATAS = { 
                                                 // export_spark_model.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -1778,7 +1778,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"\n",
                                                 L"\n",
                                                 L"#def save(base_dir: str):\n",
-                                                L"def save():\n",
+                                                L"def save(debug=False):\n",
                                                 L"    # old way\n",
                                                 L"    # d = ModelData()\n",
                                                 L"    # compile_success = parse_model_compile(d)\n",
@@ -1802,7 +1802,28 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"    \n",
                                                 L"    success_list = [True] * len(model_name_list)\n",
                                                 L"    for i in range(len(model_name_list)):\n",
-                                                L"        try:\n",
+                                                L"        if not debug: #skip try-except if in debug mode\n",
+                                                L"            try:\n",
+                                                L"                d = ModelData()\n",
+                                                L"                compile_success = parse_model_compile(d, model_compile_list[i])\n",
+                                                L"                if compile_success == -1:\n",
+                                                L"                    print(blend_name, \": Unable to locate the model_compile text-block '\",\n",
+                                                L"                          model_compile_list[i], \"'.  This model failed, but will attempt to compile others\",\n",
+                                                L"                          sep='', file=sys.stderr)\n",
+                                                L"                    success_list[i] = False\n",
+                                                L"                    continue\n",
+                                                L"                load_geometry(d)\n",
+                                                L"                load_animations(d)\n",
+                                                L"                load_physics(d)\n",
+                                                L"                write_model(d, model_name_list[i])\n",
+                                                L"            except SparkException as e:\n",
+                                                L"                success_list[i] = False\n",
+                                                L"                print(blend_name, \": SparkException raised!  \", e.args[0], sep='', file=sys.stderr)\n",
+                                                L"            \n",
+                                                L"            except Exception as e2:\n",
+                                                L"                success_list[i] = False\n",
+                                                L"                print(blend_name, \": Exception raised!  \", e2.__class__.__name__, \": \", e2.args[0], sep='', file=sys.stderr)\n",
+                                                L"        else:\n",
                                                 L"            d = ModelData()\n",
                                                 L"            compile_success = parse_model_compile(d, model_compile_list[i])\n",
                                                 L"            if compile_success == -1:\n",
@@ -1815,13 +1836,6 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"            load_animations(d)\n",
                                                 L"            load_physics(d)\n",
                                                 L"            write_model(d, model_name_list[i])\n",
-                                                L"        except SparkException as e:\n",
-                                                L"            success_list[i] = False\n",
-                                                L"            print(blend_name, \": SparkException raised!  \", e.args[0], sep='', file=sys.stderr)\n",
-                                                L"        \n",
-                                                L"        except Exception as e2:\n",
-                                                L"            success_list[i] = False\n",
-                                                L"            print(blend_name, \": Exception raised!  \", e2.__class__.__name__, \": \", e2.args[0], sep='', file=sys.stderr)\n",
                                                 L"           \n",
                                                 L"    succeeded_count = 0\n",
                                                 L"    failed_count = 0\n",
@@ -1846,7 +1860,8 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"            if success_list[i] == False:\n",
                                                 L"                print(\"  \", model_name_list[i], sep='', file=sys.stderr)\n",
                                                 L"        \n",
-                                                L"    sys.exit(1)\n",
+                                                L"    if not debug:\n",
+                                                L"        sys.exit(1)\n",
                                                 L"    \n",
                                                 L"    \n",
                                                 L"    \n",
@@ -1856,11 +1871,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"    \n",
                                                 L"    \n",
                                                 L"\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // model_compile_parser.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"# Helps tokenize the model_compile text block\n",
                                                 L"# Written by Trevor \"BeigeAlert\" Harris\n",
                                                 L"\n",
@@ -1966,11 +1982,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"    def get_line(self):\n",
                                                 L"        return self.lines[self.line].line_number + 1\n",
                                                 L"\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_animation.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -2962,11 +2979,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        anim_node = d.animation_nodes[seq.animation_node]\n",
                                                 L"        seq.length = anim_node.get_length(d)\n",
                                                 L"\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_common.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -3876,11 +3894,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        dw = self.w - sign * other.w\n",
                                                 L"        return dx * dx + dy * dy + dz * dz + dw * dw\n",
                                                 L"\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_model.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4091,11 +4110,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"                return i\n",
                                                 L"        return -1\n",
                                                 L"\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_physics.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4295,9 +4315,6 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"    scale_mat[1][1] = obj.scale.y\n",
                                                 L"    scale_mat[2][2] = obj.scale.z\n",
                                                 L"\n",
-                                                L"    # scale up vertices to compensate for resetting the object's scale to 1.0\n",
-                                                L"    temp_mesh.transform(scale_mat * d.scale_value)\n",
-                                                L"\n",
                                                 L"    reverse_winding = False\n",
                                                 L"    if (obj.scale.x * obj.scale.y * obj.scale.z) < 0.0:\n",
                                                 L"        reverse_winding = True\n",
@@ -4335,18 +4352,20 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        if d.alternate_origin_object:\n",
                                                 L"            transform = Mat4(d.alternate_origin_object.matrix_world.inverted()) * transform\n",
                                                 L"\n",
-                                                L"    transform *= Mat4(scale_mat.inverted())\n",
-                                                L"\n",
                                                 L"    if valid_parent:\n",
+                                                L"        # scale up vertices to compensate for resetting the object's scale to 1.0\n",
+                                                L"        temp_mesh.transform(scale_mat * d.scale_value)\n",
+                                                L"        transform *= Mat4(scale_mat.inverted())\n",
                                                 L"        transform_mat = transform\n",
+                                                L"        new_solid.object_to_bone_coords = Coords(transform_mat)\n",
+                                                L"        new_solid.object_to_bone_coords.origin *= d.scale_value\n",
                                                 L"    else:\n",
                                                 L"        transform_mat = transform\n",
                                                 L"        transform_mat_b = Mat4(transform_mat)\n",
                                                 L"        transform_mat_b.fix_axes(reverse=True)\n",
                                                 L"        blen_trans = transform_mat_b.to_blender()\n",
-                                                L"        temp_mesh.transform(blen_trans)\n",
-                                                L"    new_solid.object_to_bone_coords = Coords(transform_mat)\n",
-                                                L"    new_solid.object_to_bone_coords.origin *= d.scale_value\n",
+                                                L"        temp_mesh.transform(blen_trans * d.scale_value)\n",
+                                                L"        new_solid.object_to_bone_coords = Coords(Mat4())\n",
                                                 L"\n",
                                                 L"    new_solid.vertices = [Vec3([v.co[0], v.co[1], v.co[2]]) for v in temp_mesh.vertices]\n",
                                                 L"\n",
@@ -4740,11 +4759,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        reps.append(new_rep)\n",
                                                 L"        read_physics_group(d, new_rep, d.physics_groups[i])\n",
                                                 L"\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // spark_writer.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4855,11 +4875,12 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"    def close_and_return(self):\n",
                                                 L"        return self.data[0:self.pos]\n",
                                                 L"\n",
+                                                L"\n",
                                                 L"\n"},
 
                                                 // blender_compile.py
                                                 {
-                                                L"# 1455664595\n",
+                                                L"# 1455920892\n",
                                                 L"import sys\n",
                                                 L"import bpy\n",
                                                 L"\n",
@@ -4873,4 +4894,5 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"export_spark_model.save()\n",
                                                 L"\n",
                                                 L"bpy.ops.wm.quit_blender()\n",
+                                                L"\n",
                                                 L"\n"}};
