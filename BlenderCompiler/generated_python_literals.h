@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-const unsigned long long LAST_UPDATED = 1455920892;
+const unsigned long long LAST_UPDATED = 1469492249;
 
 typedef const std::wstring p_line;
 
@@ -21,7 +21,7 @@ const std::vector<const std::wstring> PYTHON_FILE_NAMES = { L"export_spark_model
 const std::vector<p_file> PYTHON_FILE_DATAS = { 
                                                 // export_spark_model.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -486,14 +486,14 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        # noinspection PyCallByClass\n",
                                                 L"        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)\n",
                                                 L"        \n",
-                                                L"        if me.uv_layers.active:\n",
-                                                L"            me.calc_tangents()  # only calculate tangents if UV data is present.\n",
-                                                L"\n",
                                                 L"        me.transform(obj.matrix_world)\n",
                                                 L"\n",
                                                 L"        # transform to alternate origin, if applicable\n",
                                                 L"        if d.alternate_origin_object:\n",
                                                 L"            me.transform(d.alternate_origin_object.matrix_world.inverted())\n",
+                                                L"        \n",
+                                                L"        if me.uv_layers.active:\n",
+                                                L"            me.calc_tangents()  # only calculate tangents if UV data is present.\n",
                                                 L"        \n",
                                                 L"        # In Spark, vertices are split by triangle because the normal/tangent/bitangent vectors and\n",
                                                 L"        # texture coordinates are stored one-per-vertex.  Not so in blender.  In Blender, a mesh\n",
@@ -1876,7 +1876,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // model_compile_parser.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"# Helps tokenize the model_compile text block\n",
                                                 L"# Written by Trevor \"BeigeAlert\" Harris\n",
                                                 L"\n",
@@ -1987,7 +1987,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_animation.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -2984,7 +2984,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_common.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -3899,7 +3899,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_model.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4115,7 +4115,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_physics.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4764,7 +4764,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_writer.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4880,7 +4880,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // blender_compile.py
                                                 {
-                                                L"# 1455920892\n",
+                                                L"# 1469492249\n",
                                                 L"import sys\n",
                                                 L"import bpy\n",
                                                 L"\n",
