@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-const unsigned long long LAST_UPDATED = 1469492249;
+const unsigned long long LAST_UPDATED = 1470622141;
 
 typedef const std::wstring p_line;
 
@@ -21,7 +21,7 @@ const std::vector<const std::wstring> PYTHON_FILE_NAMES = { L"export_spark_model
 const std::vector<p_file> PYTHON_FILE_DATAS = { 
                                                 // export_spark_model.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -169,6 +169,9 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"\n",
                                                 L"        self.add_world_bone = False  # Directive to create an extra bone to allow for static geometry in addition to\n",
                                                 L"                                     # animated geometry\n",
+                                                L"        \n",
+                                                L"        self.flip_bitangent = False # Used to make bitangent match older assets exported with the y-channel flipped.\n",
+                                                L"        \"\"\":type : bool\"\"\"\n",
                                                 L"        \n",
                                                 L"\n",
                                                 L"def add_dummy_material(m):\n",
@@ -528,7 +531,10 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"            coords = me.loops[i].tangent\n",
                                                 L"            new_vert.tan = [coords[1], coords[2], coords[0]]\n",
                                                 L"            coords = me.loops[i].bitangent\n",
-                                                L"            new_vert.bin = [coords[1], coords[2], coords[0]]\n",
+                                                L"            if d.flip_bitangent:\n",
+                                                L"                new_vert.bin = [-coords[1], -coords[2], -coords[0]]\n",
+                                                L"            else:\n",
+                                                L"                new_vert.bin = [coords[1], coords[2], coords[0]]\n",
                                                 L"\n",
                                                 L"            # add this vertex to the bounding box of the model\n",
                                                 L"            d.model.bound_box.min_max(new_vert.co[:])\n",
@@ -1128,7 +1134,8 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"                raise SparkException(\"Alternate origin object '\" + origin_name + \"' doesn't exist!\")\n",
                                                 L"            d.alternate_origin_object = bpy.data.objects[origin_name]\n",
                                                 L"\n",
-                                                L"\n",
+                                                L"        elif token == \"flip_bitangent\":\n",
+                                                L"            d.flip_bitangent = True\n",
                                                 L"        else:\n",
                                                 L"            raise SparkException(\"Syntax Error: Unexpected token \" + token + \" at line \" + str(reader.get_line()) + \".\")\n",
                                                 L"    \n",
@@ -1876,7 +1883,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // model_compile_parser.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"# Helps tokenize the model_compile text block\n",
                                                 L"# Written by Trevor \"BeigeAlert\" Harris\n",
                                                 L"\n",
@@ -1987,7 +1994,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_animation.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -2894,10 +2901,10 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        else:\n",
                                                 L"            anim_end = math.ceil(anim.end_frame)\n",
                                                 L"        \n",
-                                                L"        if anim_start:\n",
+                                                L"        if not anim_start:\n",
                                                 L"            anim_start = master_start\n",
                                                 L"        \n",
-                                                L"        if anim_end:\n",
+                                                L"        if not anim_end:\n",
                                                 L"            anim_end = master_end\n",
                                                 L"        \n",
                                                 L"        if anim_end > master_end:\n",
@@ -2924,8 +2931,8 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
                                                 L"        # frame tags' frame values are relative to the start of the animation, not the entire timeline\n",
                                                 L"        # eg. frame tag @ frame 12 in an animation that starts @ frame 5 will have a frame value of 7\n",
                                                 L"        for i in range(len(raw_anim_tags[master_anim])):\n",
-                                                L"            if anim_start >= raw_anim_tags[a][i].frame >= anim_end:  # if the frame tag is in the animation range\n",
-                                                L"                new_tag = FrameTag(raw_anim_tags[a][i])\n",
+                                                L"            if anim_start >= raw_anim_tags[master_anim][i].frame >= anim_end:  # if the frame tag is in the animation range\n",
+                                                L"                new_tag = FrameTag(raw_anim_tags[master_anim][i])\n",
                                                 L"                new_tag.frame -= master_start - anim_start\n",
                                                 L"                anim.frame_tags.append(new_tag)\n",
                                                 L"\n",
@@ -2984,7 +2991,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_common.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -3899,7 +3906,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_model.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4115,7 +4122,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_physics.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4764,7 +4771,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // spark_writer.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"# Blender -> Spark .model exporter\n",
                                                 L"# Natural Selection 2 model compile utility written\n",
                                                 L"# by Max McGuire and Steve An of Unknown Worlds Entertainment\n",
@@ -4880,7 +4887,7 @@ const std::vector<p_file> PYTHON_FILE_DATAS = {
 
                                                 // blender_compile.py
                                                 {
-                                                L"# 1469492249\n",
+                                                L"# 1470622141\n",
                                                 L"import sys\n",
                                                 L"import bpy\n",
                                                 L"\n",
